@@ -1,0 +1,96 @@
+{
+  "scopeName": "source.forester",
+  "patterns": [
+    { "include": "#body" }
+  ],
+  "repository": {
+    "body": {
+      "patterns": [
+        { "include": "#link" },
+        {
+          "begin": "(\\\\em)\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "markup.italic.forester",
+          "beginCaptures": {
+            "1": { "name": "constant.language.forester" }
+          }
+        },
+        {
+          "begin": "(\\\\strong)\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "markup.bold.forester",
+          "beginCaptures": {
+            "1": { "name": "constant.language.forester" }
+          }
+        },
+        {
+          "begin": "(\\\\title)\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "markup.heading.forester",
+          "beginCaptures": {
+            "1": { "name": "constant.language.forester" }
+          }
+        },
+        {
+          "begin": "(\\\\code)\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "markup.inline.raw.forester",
+          "beginCaptures": {
+            "1": { "name": "constant.language.forester" }
+          }
+        },
+        {
+          "begin": "#?#\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "meta.math.forester"
+        },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [
+            { "include": "#text" },
+            { "include": "#body" }
+          ]
+        },
+        { "include": "#command" },
+        { "include": "#comment" }
+      ]
+    },
+    "text": {
+      "patterns": [
+        {
+          "match": "[^%#\\\\\\{\\}\\[\\]\\(\\)\\r\\n]+",
+          "name": "markup.text.forester"
+        }
+      ]
+    },
+    "command": {
+      "match": "\\\\[A-Za-z][0-9A-Za-z\\-/#]*",
+      "captures": {
+        "0": { "name": "constant.language.forester" }
+      }
+    },
+    "comment": {
+      "begin": "%",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.forester"
+        }
+      },
+      "end": "$\\n?",
+      "name": "comment.line.percentage.forester"
+    },
+    "link": {
+      "match": "\\[([^\\[]*)\\]\\(([^\\)]*)\\)",
+      "captures": {
+        "1": { "name": "markup.text.forester" },
+        "2": { "name": "markup.underline.link.forester" }
+      }
+    }
+  }
+}

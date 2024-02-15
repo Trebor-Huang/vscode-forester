@@ -1,0 +1,66 @@
+{
+  "name": "vscode-forester",
+  "displayName": "vscode-forester",
+  "description": "Basic support for forester",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-forester.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "configurationDefaults": {
+      "[forester]": {
+        "editor.wordWrap": "on",
+        "editor.tabSize": 2
+      }
+    },
+    "languages": [
+      {
+        "id": "forester",
+        "extensions": [
+          ".tree"
+        ],
+        "configuration": "./resources/language/language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "forester",
+        "scopeName": "source.forester",
+        "path": "./resources/language/forester.tmGrammar.json",
+        "embeddedLanguages": {
+          "embedded.latex": "latex"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.86.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9"
+  }
+}
