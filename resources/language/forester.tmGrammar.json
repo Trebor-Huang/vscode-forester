@@ -8,6 +8,15 @@
       "patterns": [
         { "include": "#link" },
         {
+          "begin": "(\\\\transclude|\\\\import|\\\\export)\\{",
+          "end": "\\}",
+          "patterns": [{ "include": "#body" }],
+          "contentName": "markup.underline.link.forester",
+          "beginCaptures": {
+            "1": { "name": "constant.language.forester" }
+          }
+        },
+        {
           "begin": "(\\\\em)\\{",
           "end": "\\}",
           "patterns": [{ "include": "#body" }],
