@@ -8,7 +8,8 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
   - [X] Basic structure, comments
   - [ ] Built-in commands
   - [X] Mark-ups
-  - [ ] Links
+  - [X] Links
+  - [ ] Handle verbatim correctly
   - [ ] Embedded formula highlight (didn't find any satisfactory ones)
 - [ ] Convenience features
   - [ ] Links/transclusion/inclusion completion
