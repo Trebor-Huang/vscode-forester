@@ -17,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
             return [];
           }
           // Get the files as a first approximation to trees
+          // TODO needs to be recursive
           const files = await vscode.workspace.fs.readDirectory(
             vscode.Uri.joinPath(doc.uri, '..')
           );

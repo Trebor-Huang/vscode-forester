@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 
-// Trees no longer corresponds to files
-// so we need to query forester
 export async function getTrees(directory: vscode.Uri) {
   return [];
 }
