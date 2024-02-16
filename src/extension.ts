@@ -1,25 +1,49 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "vscode-forester" is now active!');
-
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand('vscode-forester.helloWorld', () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window.showInformationMessage('Hello World from vscode-forester!');
-  });
-
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      { scheme: 'file', language: 'forester' },
+      {
+        async provideCompletionItems(doc, pos, tok, _) {
+          // see if we should complete
+          // \transclude{, \import{, \export{, [link](
+          const tagPattern =
+            /(\\transclude{|\\import{|\\export{|\[[^\[]*\]\()$/;
+          const text = doc.getText(
+            new vscode.Range(new vscode.Position(pos.line, 0), pos)
+          );
+          if (! tagPattern.test(text)) {
+            return [];
+          }
+          // Get the files as a first approximation to trees
+          const files = await vscode.workspace.fs.readDirectory(
+            vscode.Uri.joinPath(doc.uri, '..')
+          );
+          return files
+            .filter(([filename, type]) =>
+              type === vscode.FileType.File && filename.endsWith(".tree"))
+            .map(([filename, _]) => {
+                let item = new vscode.CompletionItem(
+                  { label: filename.slice(0, -5) },
+                  vscode.CompletionItemKind.File);
+                // item.documentation = vscode.Uri.joinPath(doc.uri, '..', filename).toString();
+                return item;
+              }
+            );
+        },
+        // async resolveCompletionItem(item, tok) {
+        //   let path = vscode.Uri.parse(item.documentation as string);
+        //   item.documentation = undefined;
+        //   let content = await vscode.workspace.fs.readFile(path);
+        //   item.detail = "detail";  // title
+        //   item.documentation = content.slice(0, 50);  // first few lines
+        //   return item;
+        // }
+      },
+      '{', '('
+    )
+  );
 }
 
 // This method is called when your extension is deactivated
