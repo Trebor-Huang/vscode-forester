@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as server from './server';
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -16,22 +17,25 @@ export function activate(context: vscode.ExtensionContext) {
           if (! tagPattern.test(text)) {
             return [];
           }
-          // Get the files as a first approximation to trees
-          // TODO needs to be recursive
-          const files = await vscode.workspace.fs.readDirectory(
-            vscode.Uri.joinPath(doc.uri, '..')
-          );
-          return files
-            .filter(([filename, type]) =>
-              type === vscode.FileType.File && filename.endsWith(".tree"))
-            .map(([filename, _]) => {
-                let item = new vscode.CompletionItem(
-                  { label: filename.slice(0, -5) },
-                  vscode.CompletionItemKind.File);
-                // item.documentation = vscode.Uri.joinPath(doc.uri, '..', filename).toString();
-                return item;
-              }
+          // Get the files
+          var root : vscode.Uri;
+          if (vscode.workspace.workspaceFolders) {
+            if (vscode.workspace.workspaceFolders.length !== 1) {
+              vscode.window.showWarningMessage("vscode-forester only supports opening one workspace folder.");
+            }
+            root = vscode.workspace.workspaceFolders[0].uri;
+          } else {
+            // Probably opened a single
+            root = vscode.Uri.joinPath(doc.uri, '..');
+          }
+          return (await server.getTrees(root)).map(([name, title]) => {
+            let item = new vscode.CompletionItem(
+              { label: name },
+              vscode.CompletionItemKind.Module
             );
+            item.detail = title;
+            return item;
+          });
         },
         // async resolveCompletionItem(item, tok) {
         //   let path = vscode.Uri.parse(item.documentation as string);

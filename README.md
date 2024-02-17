@@ -17,7 +17,7 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
   - [ ] Definitions
   - [ ] Advanced language features
   - [ ] Formula preview
-  - [ ] Shift-click to jump to file
+  - [ ] Shift-click to jump to file (how do we locate subtrees?)
   - [ ] Build on save
     - [ ] error reporting
 - [ ] GUI for common actions such as tree creation
