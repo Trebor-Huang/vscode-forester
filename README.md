@@ -13,7 +13,7 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
   - [ ] Embedded formula highlight (didn't find any satisfactory ones)
 - [ ] Convenience features
   - [X] Links/transclusion/import completion
-    - Needs to show more info like title etc. would be nice if forester provides a comprehensive query API (currently can do with `forester complete`)
+    - Needs to show more info like title etc. would be nice if forester provides a comprehensive query API (this `forester query all` thing just dropped)
   - [ ] Definitions
   - [ ] Advanced language features
   - [ ] Formula preview
