@@ -7,17 +7,22 @@
     "vscode": "^1.86.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vscode-forester.helloWorld",
-        "title": "Hello World"
+    "commands": [],
+    "configuration": {
+      "title": "Forester",
+      "properties": {
+        "forester.command": {
+          "type": "string",
+          "default": "",
+          "description": "This command should be `[path to forester] complete [trees directory]`."
+        }
       }
-    ],
+    },
     "configurationDefaults": {
       "[forester]": {
         "editor.wordWrap": "on",

@@ -5,8 +5,10 @@ import * as child_process from 'child_process';
 const exec = util.promisify(child_process.exec);
 
 export async function getTrees(directory: vscode.Uri) {
-  let { stderr, stdout } = await exec(
-    "/Users/trebor/.opam/5.1.0/bin/forester complete trees",
+  const config = vscode.workspace.getConfiguration('forester');
+  const cmd : string = config.get('command') ?? "forester complete trees";
+
+  let { stderr, stdout } = await exec(cmd,
     {
       cwd: directory.fsPath,
       env: process.env
