@@ -13,13 +13,12 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
   - [ ] Embedded formula highlight (didn't find any satisfactory ones)
 - [ ] Convenience features
   - [X] Links/transclusion/import completion
-    - Needs to show more info like title etc. would be nice if forester provides a comprehensive query API (this `forester query all` thing just dropped)
   - [ ] Definitions
   - [ ] Advanced language features
   - [ ] Formula preview
-  - [ ] Shift-click to jump to file (how do we locate subtrees?)
+  - [ ] Shift-click to jump to file (how do we locate subtrees? we need more stuff for `forester query`)
   - [ ] Build on save
-    - [ ] error reporting
+    - [ ] error reporting (maybe we ask forester to not include those fancy stuff in error reports)
 - [ ] GUI for common actions such as tree creation
 - [ ] Integrate with the edit button?
 - [ ] Handle inline subtrees correctly

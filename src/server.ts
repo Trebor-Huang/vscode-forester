@@ -4,9 +4,10 @@ import * as child_process from 'child_process';
 
 const exec = util.promisify(child_process.exec);
 
-export async function getTrees(directory: vscode.Uri) {
+// TODO write an interface type
+export async function query(directory: vscode.Uri) {
   const config = vscode.workspace.getConfiguration('forester');
-  const cmd : string = config.get('command') ?? "forester complete trees";
+  const cmd : string = config.get('command') ?? "forester query all trees";
 
   let { stderr, stdout } = await exec(cmd,
     {
@@ -19,10 +20,12 @@ export async function getTrees(directory: vscode.Uri) {
   });
   if (stderr) {
     vscode.window.showErrorMessage(stderr);
-    return [];
+    return {};
   }
-  // TODO make forester return a more structured format like json
-  // Also the title doesn't correctly handle formatted text
-  const paths = stdout.split('\n').map(pair => pair.split(', ', 2));
-  return paths;
+  try {
+    return JSON.parse(stdout);
+  } catch (e : any) {
+    console.log(e);
+    vscode.window.showErrorMessage("Forester didn't return a valid JSON response.");
+  }
 }

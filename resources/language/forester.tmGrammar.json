@@ -8,7 +8,7 @@
       "patterns": [
         { "include": "#link" },
         {
-          "begin": "(\\\\transclude|\\\\import|\\\\export)\\{",
+          "begin": "(\\\\transclude|\\\\import|\\\\export|\\\\ref)\\{",
           "end": "\\}",
           "patterns": [{ "include": "#body" }],
           "contentName": "markup.underline.link.forester",

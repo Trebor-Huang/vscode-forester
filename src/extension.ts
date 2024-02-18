@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
           // see if we should complete
           // \transclude{, \import{, \export{, [link](
           const tagPattern =
-            /(\\transclude{|\\import{|\\export{|\[[^\[]*\]\()$/;
+            /(\\transclude{|\\import{|\\export{|\\ref{|\[[^\[]*\]\()$/;
           const text = doc.getText(
             new vscode.Range(new vscode.Position(pos.line, 0), pos)
           );
@@ -28,23 +28,18 @@ export function activate(context: vscode.ExtensionContext) {
             // Probably opened a single
             root = vscode.Uri.joinPath(doc.uri, '..');
           }
-          return (await server.getTrees(root)).map(([name, title]) => {
+          var results : vscode.CompletionItem[] = [];
+          for (const [id, val] of Object.entries(await server.query(root))) {
             let item = new vscode.CompletionItem(
-              { label: name },
-              vscode.CompletionItemKind.Module
+              { label: id , description: (val as any).title },
+              vscode.CompletionItemKind.Value
             );
-            item.detail = title;
-            return item;
-          });
+            item.detail = (val as any).taxon ?? "Tree";
+            item.documentation = (val as any).title;
+            results.push(item);
+          }
+          return results;
         },
-        // async resolveCompletionItem(item, tok) {
-        //   let path = vscode.Uri.parse(item.documentation as string);
-        //   item.documentation = undefined;
-        //   let content = await vscode.workspace.fs.readFile(path);
-        //   item.detail = "detail";  // title
-        //   item.documentation = content.slice(0, 50);  // first few lines
-        //   return item;
-        // }
       },
       '{', '('
     )
