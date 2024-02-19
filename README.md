@@ -30,6 +30,6 @@ You need `forester` installed, see [here](https://www.jonmsterling.com/jms-005P.
 
 ## Extension Settings
 
-You can't configure it yet.
+- Use the `forester.command` setting to configure what command the plugin should run to query information from your forest. Usually it should be some invocation of of `forester query all`.
 
 ## Known Issues
