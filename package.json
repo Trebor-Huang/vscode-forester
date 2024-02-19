@@ -3,6 +3,7 @@
   "displayName": "vscode-forester",
   "description": "Basic support for forester",
   "repository": "github:Trebor-Huang/vscode-forester",
+  "publisher": "treborhuang",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.86.0"
