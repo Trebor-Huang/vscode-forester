@@ -18,8 +18,8 @@
       "properties": {
         "forester.command": {
           "type": "string",
-          "default": "",
-          "description": "This command should be `[path to forester] complete [trees directory]`."
+          "default": "forester query all trees",
+          "description": "This command should be `[path to forester] query all [trees directory]`. Note that in a lot of situations VSCode won't know the PATH variable of your shell, so you need to write the path in. The working directory is the root directory of your workspace or parent directory of your file."
         }
       }
     },
