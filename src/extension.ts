@@ -31,10 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
           var results : vscode.CompletionItem[] = [];
           for (const [id, val] of Object.entries(await server.query(root))) {
             let item = new vscode.CompletionItem(
-              { label: id , description: (val as any).title },
+              { label: (val as any).title , description: (val as any).taxon },
               vscode.CompletionItemKind.Value
             );
-            item.detail = (val as any).taxon ?? "Tree";
+            item.insertText = id;
+            item.detail = ((val as any).taxon ?? "Tree") + ` [${id}]`;
             item.documentation = (val as any).title;
             results.push(item);
           }
