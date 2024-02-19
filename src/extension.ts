@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
       {
         async provideCompletionItems(doc, pos, tok, _) {
           // see if we should complete
-          // \transclude{, \import{, \export{, [link](
+          // \transclude{, \import{, \export{, \ref, [link](
           const tagPattern =
             /(\\transclude{|\\import{|\\export{|\\ref{|\[[^\[]*\]\()$/;
           const text = doc.getText(
@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
             root = vscode.workspace.workspaceFolders[0].uri;
           } else {
-            // Probably opened a single
+            // Probably opened a single file
             root = vscode.Uri.joinPath(doc.uri, '..');
           }
           var results : vscode.CompletionItem[] = [];
