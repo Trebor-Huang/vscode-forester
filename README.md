@@ -2,29 +2,34 @@
 
 Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.xml), a tool for tending forests of evergreen notes.
 
+![A demonstration of the plugin's completion ability.](demo/image.png)
+
 ## Features
 
 - [ ] Language highlight
   - [X] Basic structure, comments
-  - [ ] Built-in commands
+    - [ ] Escapes are not quite right yet, though I'm not sure forester is doing it right either
+  - [X] Built-in commands
   - [X] Mark-ups
   - [X] Links
-  - [ ] Handle verbatim correctly
-  - [ ] Embedded formula highlight (didn't find any satisfactory ones)
+  - [ ] Handle verbatim correctly (help I'm drowning in regex)
+  - [X] ~~Embedded formula highlight~~ (pretending it's plain forester syntax is good enough)
 - [ ] Convenience features
-  - [X] Links/transclusion/import completion
-  - [ ] Definitions
-  - [ ] Advanced language features
-  - [ ] Formula preview
-  - [ ] Shift-click to jump to file (how do we locate subtrees? we need more stuff for `forester query`)
+  - [X] Tree ID completion. **You can type in a part of the title to filter for trees. Press tabs to insert the ID (which will replace the title you entered)**
+  - [ ] Advanced language features (this is not doable without a forester LSP)
+  - [ ] Formula preview (hard without forester LSP, since macros are evaluated by forester)
+  - [ ] Shift-click to jump to file (how do we locate anything? we need more stuff for `forester query`)
   - [ ] Build on save
     - [ ] error reporting (maybe we ask forester to not include those fancy stuff in error reports)
 - [ ] GUI for common actions such as tree creation
-- [ ] Integrate with the edit button?
-- [ ] Handle inline subtrees correctly
+- [X] ~~Integrate with the edit button?~~ (it's doing fine on its own)
 
 ## Requirements
 
+You need `forester` installed, see [here](https://www.jonmsterling.com/jms-005P.xml) for the instructions. Configure the paths in the settings.
+
 ## Extension Settings
+
+You can't configure it yet.
 
 ## Known Issues
