@@ -41,14 +41,17 @@ export function activate(context: vscode.ExtensionContext) {
           );
           var results : vscode.CompletionItem[] = [];
           for (const [id, val] of Object.entries(await server.query(root))) {
+            let { title, taxon } = val as any;
+            title ??= "Untitled";
             let item = new vscode.CompletionItem(
-              { label: (val as any).title , description: (val as any).taxon },
+              { label: title , description: taxon ?? "" },
               vscode.CompletionItemKind.Value
             );
             item.range = range;
             item.insertText = id;
-            item.detail = ((val as any).taxon ?? "Tree") + ` [${id}]`;
-            item.documentation = (val as any).title;
+            item.filterText = `${id} ${title} ${taxon ?? ""}`;
+            item.detail = `${taxon ?? "Tree"} [${id}]`;
+            item.documentation = title;
             results.push(item);
           }
           return results;
