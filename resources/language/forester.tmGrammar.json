@@ -95,11 +95,20 @@
       "name": "comment.line.percentage.forester"
     },
     "link": {
-      "match": "\\[([^\\[]*)\\]\\(([^\\)]*)\\)",
-      "captures": {
-        "1": { "name": "markup.text.forester" },
-        "2": { "name": "markup.underline.link.forester" }
-      }
+      "patterns": [
+        {
+          "match": "\\[([^\\[]*)\\]\\(([^\\)]*)\\)",
+          "captures": {
+            "1": { "name": "markup.text.forester" },
+            "2": { "name": "markup.underline.link.forester" }
+          }
+        },
+        {
+          "begin": "\\[\\[",
+          "end": "\\]\\]",
+          "contentName": "markup.underline.link.forester"
+        }
+      ]
     }
   }
 }

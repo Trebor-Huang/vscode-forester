@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
           return results;
         },
       },
-      '{', '('
+      '{', '(', '['
     )
   );
 }
