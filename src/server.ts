@@ -4,8 +4,16 @@ import * as child_process from 'child_process';
 
 const exec = util.promisify(child_process.exec);
 
-// TODO write an interface type
-export async function query(directory: vscode.Uri) {
+// See lib/render/Render_json.ml in forester
+interface QueryResult {
+  title: string | null,
+  taxon: string | null,
+  tags: string[],
+  route: string,
+  metas: Map<string, string>
+}
+
+export async function query(directory: vscode.Uri) : Promise<{[key: string]: QueryResult}> {
   const config = vscode.workspace.getConfiguration('forester');
   const cmd : string = config.get('command') ?? "forester query all trees";
 
@@ -27,5 +35,6 @@ export async function query(directory: vscode.Uri) {
   } catch (e : any) {
     console.log(e);
     vscode.window.showErrorMessage("Forester didn't return a valid JSON response.");
+    return {};
   }
 }
