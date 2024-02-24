@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as util from 'util';
 import * as child_process from 'child_process';
 
-const exec = util.promisify(child_process.exec);
+const execFile = util.promisify(child_process.execFile);
 
 // See lib/render/Render_json.ml in forester
 export interface QueryResult {
@@ -18,7 +18,7 @@ export async function query(root: vscode.Uri, token: vscode.CancellationToken)
   // Get some configurations
   const config = vscode.workspace.getConfiguration('forester');
   const path : string = config.get('path') ?? "forester";
-  const dirs : string[] = config.get('directories') ?? [];
+  const dirs : string[] = config.get('directories') ?? ['trees'];
 
   // Spawn process
   let forester = child_process.spawn(
@@ -76,5 +76,29 @@ export async function query(root: vscode.Uri, token: vscode.CancellationToken)
       vscode.window.showErrorMessage("Forester didn't return a valid JSON response.");
       return {};
     }
+  }
+}
+
+export async function command(root: vscode.Uri, command: string[]) {
+  // Get some configurations
+  const config = vscode.workspace.getConfiguration('forester');
+  const path : string = config.get('path') ?? "forester";
+  const dirs : string[] = config.get('directories') ?? ['trees'];
+
+  try {
+    let { stdout, stderr } = await execFile(
+      path,
+      [...command, ...dirs],
+      {
+        cwd: root.fsPath,
+        windowsHide: true
+      }
+    );
+    if (stderr) {
+      vscode.window.showErrorMessage(stderr);
+    }
+    return stdout;
+  } catch (e : any) {
+    vscode.window.showErrorMessage(e.toString());
   }
 }

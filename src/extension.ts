@@ -6,6 +6,18 @@ var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
 var cancel : vscode.CancellationTokenSource | undefined;
 var dirty = true;
 
+function getRoot() {
+  if (vscode.workspace.workspaceFolders?.length) {
+    if (vscode.workspace.workspaceFolders.length !== 1) {
+      vscode.window.showWarningMessage("vscode-forester only supports opening one workspace folder.");
+    }
+    return vscode.workspace.workspaceFolders[0].uri;
+  } else {
+    // Probably opened a single file
+    throw new vscode.FileSystemError("vscode-forester doesn't support opening a single file.");
+  }
+}
+
 function update() {
   if (! dirty) {
     return;
@@ -14,17 +26,6 @@ function update() {
     cancel.cancel();
   }
   cancel = new vscode.CancellationTokenSource();
-
-  var root : vscode.Uri;
-  if (vscode.workspace.workspaceFolders?.length) {
-    if (vscode.workspace.workspaceFolders.length !== 1) {
-      vscode.window.showWarningMessage("vscode-forester only supports opening one workspace folder.");
-    }
-    root = vscode.workspace.workspaceFolders[0].uri;
-  } else {
-    // Probably opened a single file
-    throw new vscode.FileSystemError("vscode-forester doesn't support opening a single file.");
-  }
 
   dirty = false;
   cachedQuery = Promise.race([
@@ -35,7 +36,7 @@ function update() {
       });
     })(),
     // The token is also used to cancel the stuff inside
-    server.query(root, cancel.token)
+    server.query(getRoot(), cancel.token)
   ]);
 }
 
@@ -111,7 +112,9 @@ export function activate(context: vscode.ExtensionContext) {
         if (folder === undefined) {
           // Try to get from focused folder
         }
-        // Ask about prefix and template
+        // Ask about prefix and template in a quick pick
+        // https://code.visualstudio.com/api/references/vscode-api#window.showQuickPick
+        server.command(getRoot(), ["new", "--dest", "trees", "--prefix", "tree", "--template=basic", "--dirs"]);
       }
     )
   );
