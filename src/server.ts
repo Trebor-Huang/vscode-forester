@@ -13,22 +13,19 @@ export interface QueryResult {
   metas: Map<string, string>
 }
 
-export async function query(directory: vscode.Uri, token: vscode.CancellationToken)
+export async function query(root: vscode.Uri, token: vscode.CancellationToken)
   : Promise<{[key: string]: QueryResult}> {
   // Get some configurations
   const config = vscode.workspace.getConfiguration('forester');
-  const cmd : string = config.get('command') ?? "forester query all trees";
-
-  const env = process.env;
-  // env.PATH = "";
+  const path : string = config.get('path') ?? "forester";
+  const dirs : string[] = config.get('directories') ?? [];
 
   // Spawn process
   let forester = child_process.spawn(
-    "forester",
-    ["query", "all", "trees"],
+    path,
+    ["query", "all", ...dirs],
     {
-      cwd: directory.fsPath,
-      env,
+      cwd: root.fsPath,
       detached: false,
       stdio: 'pipe',
       windowsHide: true

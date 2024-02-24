@@ -25,10 +25,18 @@
     "configuration": {
       "title": "Forester",
       "properties": {
-        "forester.command": {
+        "forester.directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["trees"],
+          "description": "Specifies the directories for forester to scan for trees. This should usually be edited per workspace, instead of globally."
+        },
+        "forester.path": {
           "type": "string",
-          "default": "forester query all trees",
-          "description": "This command should be `[path to forester] query all [trees directory]`. Note that in a lot of situations VSCode won't know the PATH variable of your shell, so you need to write the path in. The working directory is the root directory of your workspace or parent directory of your file."
+          "default": "forester",
+          "description": "Specifies the path to forester. Note that VSCode usually does not inherit the shell PATH variable."
         }
       }
     },

@@ -4,8 +4,12 @@ import * as server from './server';
 
 var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
 var cancel : vscode.CancellationTokenSource | undefined;
+var dirty = true;
 
-function update(uri ?: vscode.Uri) {
+function update() {
+  if (! dirty) {
+    return;
+  }
   if (cancel !== undefined) {
     cancel.cancel();
   }
@@ -21,12 +25,12 @@ function update(uri ?: vscode.Uri) {
     // Probably opened a single file
     throw new vscode.FileSystemError("vscode-forester doesn't support opening a single file.");
   }
+
+  dirty = false;
   cachedQuery = Promise.race([
     util.promisify((callback : (...args: any) => void) => {
       // If cancelled, return {} immediately
       cancel?.token.onCancellationRequested((e) => {
-        // since now the result is dirty, initiate recalculation immeiately
-        update();
         callback(undefined, {});
       });
     })(),
@@ -56,10 +60,10 @@ async function suggest(range: vscode.Range) {
 
 export function activate(context: vscode.ExtensionContext) {
   const watcher = vscode.workspace.createFileSystemWatcher('**/*.tree');
-  watcher.onDidCreate(update);
-  watcher.onDidChange(update);
-  watcher.onDidDelete(update);
-  update();
+  watcher.onDidCreate(() => { dirty = true; });
+  watcher.onDidChange(() => { dirty = true; });
+  watcher.onDidDelete(() => { dirty = true; });
+  setInterval(update, 200);
 
   context.subscriptions.push(
     watcher,
@@ -93,6 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           // If we cancel, we kill the process
           context.subscriptions.push(tok.onCancellationRequested(() => {
+            dirty = true;
             cancel?.cancel();
           }));
           return await suggest(range);
@@ -102,10 +107,11 @@ export function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       "forester.new",
-      function (...args) {
-        // [the right-clicked tree, list of selected trees]
-        // or undefined
-        console.log(args);
+      function (folder ?: vscode.Uri) {
+        if (folder === undefined) {
+          // Try to get from focused folder
+        }
+        // Ask about prefix and template
       }
     )
   );
