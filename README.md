@@ -6,16 +6,17 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
 
 ## Features
 
+- Language highlight
+- Tree ID completion: **You can type in a part of the title/ID/taxon to filter for trees. Press tabs to insert the ID (which will replace the title you entered).**
+
+### To do
+
 - [ ] Language highlight
-  - [X] Basic structure, comments
-    - [ ] Escapes are not quite right yet, though I'm not sure forester is doing it right either
-  - [X] Built-in commands
-  - [X] Mark-ups
-  - [X] Links
+  - [ ] Escapes are not quite right yet, though I'm not sure forester is doing it right either
   - [ ] Handle verbatim correctly (help I'm drowning in regex)
+    - [ ] Verbatim with TeX highlight (a syntax like `\startverb%TeX` looks good)
   - [X] ~~Embedded formula highlight~~ (pretending it's plain forester syntax is good enough)
 - [ ] Convenience features
-  - [X] Tree ID completion. **You can type in a part of the title to filter for trees. Press tabs to insert the ID (which will replace the title you entered)**
   - [ ] Advanced language features (this is not doable without a forester LSP)
   - [ ] Formula preview (hard without forester LSP, since macros are evaluated by forester)
   - [ ] Shift-click to jump to file (how do we locate anything? we need more stuff for `forester query`)
@@ -26,7 +27,7 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
 
 ## Requirements
 
-You need `forester` installed, see [here](https://www.jonmsterling.com/jms-005P.xml) for the instructions. Configure the paths in the settings.
+You need `forester` installed, see [here](https://www.jonmsterling.com/jms-005P.xml) for the instructions. Configure the paths in the settings. Since this plugin is in early development, you will often need the `HEAD` commit of forester to be compatible.
 
 ## Extension Settings
 

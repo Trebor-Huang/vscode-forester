@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.0.3
+
+- Improves performance in large forests (#5), experimental.
+- 
+
 ## 0.0.2
 
 - Bug fixes (#1)
