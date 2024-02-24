@@ -14,7 +14,14 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [],
+    "commands": [
+      {
+        "command": "forester.new",
+        "title": "New tree...",
+        "category": "Forester",
+        "icon": "$(diff-added)"
+      }
+    ],
     "configuration": {
       "title": "Forester",
       "properties": {
@@ -49,7 +56,23 @@
           "embedded.latex": "latex"
         }
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "forester.new",
+          "when": "view == workbench.explorer.fileView",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "forester.new",
+          "when": "explorerResourceIsFolder",
+          "group": "7_modification"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

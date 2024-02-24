@@ -1,8 +1,68 @@
 import * as vscode from 'vscode';
+import * as util from 'util';
 import * as server from './server';
 
+var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
+var cancel : vscode.CancellationTokenSource | undefined;
+
+function update(uri ?: vscode.Uri) {
+  if (cancel !== undefined) {
+    cancel.cancel();
+  }
+  cancel = new vscode.CancellationTokenSource();
+
+  var root : vscode.Uri;
+  if (vscode.workspace.workspaceFolders?.length) {
+    if (vscode.workspace.workspaceFolders.length !== 1) {
+      vscode.window.showWarningMessage("vscode-forester only supports opening one workspace folder.");
+    }
+    root = vscode.workspace.workspaceFolders[0].uri;
+  } else {
+    // Probably opened a single file
+    throw new vscode.FileSystemError("vscode-forester doesn't support opening a single file.");
+  }
+  cachedQuery = Promise.race([
+    util.promisify((callback : (...args: any) => void) => {
+      // If cancelled, return {} immediately
+      cancel?.token.onCancellationRequested((e) => {
+        // since now the result is dirty, initiate recalculation immeiately
+        update();
+        callback(undefined, {});
+      });
+    })(),
+    // The token is also used to cancel the stuff inside
+    server.query(root, cancel.token)
+  ]);
+}
+
+async function suggest(range: vscode.Range) {
+  var results : vscode.CompletionItem[] = [];
+  for (const [id, val] of Object.entries(await cachedQuery)) {
+    let { title, taxon } = val;
+    title ??= "Untitled";
+    let item = new vscode.CompletionItem(
+      { label: title , description: taxon ?? "" },
+      vscode.CompletionItemKind.Value
+    );
+    item.range = range;
+    item.insertText = id;
+    item.filterText = `${id} ${title} ${taxon ?? ""}`;
+    item.detail = `${taxon ?? "Tree"} [${id}]`;
+    item.documentation = title;
+    results.push(item);
+  }
+  return results;
+}
+
 export function activate(context: vscode.ExtensionContext) {
+  const watcher = vscode.workspace.createFileSystemWatcher('**/*.tree');
+  watcher.onDidCreate(update);
+  watcher.onDidChange(update);
+  watcher.onDidDelete(update);
+  update();
+
   context.subscriptions.push(
+    watcher,
     vscode.languages.registerCompletionItemProvider(
       { scheme: 'file', language: 'forester' },
       {
@@ -19,45 +79,34 @@ export function activate(context: vscode.ExtensionContext) {
           if (match === null || match.indices === undefined) {
             return [];
           }
+
+          // Get the needed range
           let ix =
             match.indices[1]?.[0] ??
             match.indices[2]?.[0] ??
             match.indices[3]?.[0] ??
             pos.character;
-          // Get the files
-          var root : vscode.Uri;
-          if (vscode.workspace.workspaceFolders) {
-            if (vscode.workspace.workspaceFolders.length !== 1) {
-              vscode.window.showWarningMessage("vscode-forester only supports opening one workspace folder.");
-            }
-            root = vscode.workspace.workspaceFolders[0].uri;
-          } else {
-            // Probably opened a single file
-            root = vscode.Uri.joinPath(doc.uri, '..');
-          }
           let range = new vscode.Range(
             new vscode.Position(pos.line, ix),
             pos
           );
-          var results : vscode.CompletionItem[] = [];
-          for (const [id, val] of Object.entries(await server.query(root))) {
-            let { title, taxon } = val as any;
-            title ??= "Untitled";
-            let item = new vscode.CompletionItem(
-              { label: title , description: taxon ?? "" },
-              vscode.CompletionItemKind.Value
-            );
-            item.range = range;
-            item.insertText = id;
-            item.filterText = `${id} ${title} ${taxon ?? ""}`;
-            item.detail = `${taxon ?? "Tree"} [${id}]`;
-            item.documentation = title;
-            results.push(item);
-          }
-          return results;
+
+          // If we cancel, we kill the process
+          context.subscriptions.push(tok.onCancellationRequested(() => {
+            cancel?.cancel();
+          }));
+          return await suggest(range);
         },
       },
       '{', '(', '['
+    ),
+    vscode.commands.registerCommand(
+      "forester.new",
+      function (...args) {
+        // [the right-clicked tree, list of selected trees]
+        // or undefined
+        console.log(args);
+      }
     )
   );
 }
