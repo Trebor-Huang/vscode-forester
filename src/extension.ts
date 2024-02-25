@@ -175,13 +175,18 @@ export function activate(context: vscode.ExtensionContext) {
         const random : boolean = vscode.workspace
           .getConfiguration('forester')
           .get('create.random') ?? false;
-        server.command(root, ["new",
+        let result = (await server.command(root, ["new",
           "--dest", folder.fsPath,
           "--prefix", prefix,
           ...(template ? [`--template=${template}`] : []),
           ...(random ? ["--random"] : []),
           "--dirs"  // Follows the directories in the settings
-        ]);
+        ]))?.trim();
+        if (result) {
+          await vscode.window.showTextDocument(
+            await vscode.workspace.openTextDocument(result)
+          );
+        }
       }
     )
   );
