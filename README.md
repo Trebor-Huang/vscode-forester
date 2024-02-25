@@ -7,6 +7,7 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
 ## Features
 
 - Language highlight.
+  - Use `\startverb%tex` to retain TeX highlighting (which agrees with whatever TeX language support you happen to have installed) in verbatim environments. Otherwise the verbatim part will not be highlighted.
 - Tree ID completion: **You can type in a part of the title/ID/taxon to filter for trees. Press tabs to insert the ID (which will replace the title you entered).**
 - Tree creation: right-click on a folder and select the "New Tree..." item, which guides you in creating a new tree.
 
@@ -14,8 +15,6 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
 
 - [ ] Language highlight
   - [ ] Escapes are not quite right yet, though I'm not sure forester is doing it right either
-  - [ ] Handle verbatim correctly (help I'm drowning in regex)
-    - [ ] Verbatim with TeX highlight (a syntax like `\startverb%TeX` looks good)
   - [X] ~~Embedded formula highlight~~ (pretending it's plain forester syntax is good enough)
 - [ ] Convenience features
   - [ ] Advanced language features (this is not doable without a forester LSP)

@@ -6,6 +6,8 @@
   "repository": {
     "body": {
       "patterns": [
+        { "include": "#tex" },
+        { "include": "#verbatim" },
         { "include": "#link" },
         {
           "begin": "(\\\\transclude|\\\\import|\\\\export|\\\\ref)\\{",
@@ -77,6 +79,33 @@
           "name": "markup.text.forester"
         }
       ]
+    },
+    "tex": {
+      "begin": "(\\\\startverb)(%)(tex).*",
+      "end": "\\\\stopverb",
+      "patterns": [
+        { "include": "text.tex.latex" }
+      ],
+      "beginCaptures": {
+        "1": { "name": "constant.language.forester" },
+        "2": { "name": "punctuation.definition.comment.forester comment.line.percentage.forester" },
+        "3": { "name": "keyword.other.forester" }
+      },
+      "endCaptures": {
+        "0": { "name": "constant.language.forester" }
+      },
+      "contentName": "embedded.latex"
+    },
+    "verbatim": {
+      "begin": "\\\\startverb",
+      "end": "\\\\stopverb",
+      "contentName": "markup.raw.forester",
+      "beginCaptures": {
+        "0": { "name": "constant.language.forester" }
+      },
+      "endCaptures": {
+        "0": { "name": "constant.language.forester" }
+      }
     },
     "command": {
       "match": "\\\\[A-Za-z][0-9A-Za-z\\-/#]*",
