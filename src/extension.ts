@@ -110,18 +110,78 @@ export function activate(context: vscode.ExtensionContext) {
           killswitch.dispose();
           return result;
         },
+        // resolveCompletionItem, we can extend the CompletionItem class to inject more information
       },
       '{', '(', '['
     ),
     vscode.commands.registerCommand(
       "forester.new",
-      function (folder ?: vscode.Uri) {
+      async function (folder ?: vscode.Uri) {
         if (folder === undefined) {
           // Try to get from focused folder
+          // https://github.com/Microsoft/vscode/issues/3553
+
+          // "view/title": [
+          //   {
+          //     "command": "forester.new",
+          //     "when": "view == workbench.explorer.fileView",
+          //     "group": "navigation"
+          //   }
+          // ],
+          return;
         }
+        let root = getRoot();
         // Ask about prefix and template in a quick pick
         // https://code.visualstudio.com/api/references/vscode-api#window.showQuickPick
-        server.command(getRoot(), ["new", "--dest", "trees", "--prefix", "tree", "--template=basic", "--dirs"]);
+        let prefixes = (await server.command(root, ["query", "prefix"]))?.trim().split('\n') ?? [];
+        var prefix: string | undefined = undefined;
+        // allow the option to just use a new prefix
+        if (prefixes) {
+          prefix = await vscode.window.showQuickPick(
+            prefixes,
+            {
+              canPickMany: false,
+              placeHolder: "Choose prefix or Escape to use new one"
+            }
+          );
+        }
+        if (prefix === undefined) {
+          prefix = await vscode.window.showInputBox(
+            {
+              placeHolder: "Enter a prefix"
+            }
+          );
+        }
+        if (prefix === undefined) {
+          return;  // Cancelled
+        }
+
+        let templates = (await vscode.workspace.fs.readDirectory(
+          vscode.Uri.joinPath(root, 'templates')
+        ))
+        .filter(([n, f]) => f === vscode.FileType.File && n.endsWith(".tree"))
+        .map(([n, f]) => n.slice(0, -5));
+        var template: string | undefined = undefined;
+        if (templates) {
+          template = await vscode.window.showQuickPick(
+            templates,
+            {
+              canPickMany: false,
+              placeHolder: "Press Escape to use empty template"
+            }
+          );
+        }
+
+        const random : boolean = vscode.workspace
+          .getConfiguration('forester')
+          .get('create.random') ?? false;
+        server.command(root, ["new",
+          "--dest", folder.fsPath,
+          "--prefix", prefix,
+          ...(template ? [`--template=${template}`] : []),
+          ...(random ? ["--random"] : []),
+          "--dirs"  // Follows the directories in the settings
+        ]);
       }
     )
   );
