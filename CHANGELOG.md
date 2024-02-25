@@ -3,7 +3,8 @@
 ## 0.0.3
 
 - Improves performance in large forests (#5), experimental.
-- 
+- GUI for new tree creation.
+- Improved syntax highlight.
 
 ## 0.0.2
 
