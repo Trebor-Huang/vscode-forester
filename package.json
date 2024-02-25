@@ -8,6 +8,8 @@
   "engines": {
     "vscode": "^1.86.0"
   },
+  "markdown": "github",
+  "icon": "./resources/Forester.png",
   "categories": [
     "Programming Languages"
   ],
