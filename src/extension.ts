@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as util from 'util';
 import * as server from './server';
 
+// TODO there must be a better system
+// Maybe an event pool instead of a promise
 var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
 var cancel : vscode.CancellationTokenSource | undefined;
 var dirty = true;
@@ -64,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
   watcher.onDidCreate(() => { dirty = true; });
   watcher.onDidChange(() => { dirty = true; });
   watcher.onDidDelete(() => { dirty = true; });
-  setInterval(update, 200);
+  update();
 
   context.subscriptions.push(
     watcher,
@@ -97,11 +99,14 @@ export function activate(context: vscode.ExtensionContext) {
           );
 
           // If we cancel, we kill the process
-          context.subscriptions.push(tok.onCancellationRequested(() => {
+          update();
+          let killswitch = tok.onCancellationRequested(() => {
             dirty = true;
             cancel?.cancel();
-          }));
-          return await suggest(range);
+          });
+          let result = await suggest(range);
+          killswitch.dispose();
+          return result;
         },
       },
       '{', '(', '['
