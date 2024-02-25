@@ -27,10 +27,12 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
 
 ## Requirements
 
-You need `forester` installed, see [here](https://www.jonmsterling.com/jms-005P.xml) for the instructions. Configure the paths in the settings. Since this plugin is in early development, you will often need the `HEAD` commit of forester to be compatible.
+You need forester installed, see [here](https://www.jonmsterling.com/jms-005P.xml) for the instructions. Configure the paths in the settings. Since this plugin is in early development, you will often need the `HEAD` commit of forester to be compatible.
 
 ## Extension Settings
 
-- Use the `forester.command` setting to configure what command the plugin should run to query information from your forest. Usually it should be some invocation of of `forester query all`.
+- Use `forester.path` to configure the path to forester. It needs to include the name of the executable too.
+- Use `forester.directories` to specify a list of folders to look for trees. This should usually be edited per workspace, instead of globally.
+- Use `forester.completion.showID` to toggle whether the tree ID is shown in completions. It is recommended to use smaller fonts when switching on this feature. There are also plugins to create keybindings for setting toggles. VSCode also has a lot of useful settings in the `editor.suggest` section worth looking at in conjunction.
 
 ## Known Issues

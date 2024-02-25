@@ -37,6 +37,11 @@
           "type": "string",
           "default": "forester",
           "description": "Specifies the path to forester. Note that VSCode usually does not inherit the shell PATH variable."
+        },
+        "forester.completion.showID": {
+          "type": "boolean",
+          "default": false,
+          "description": "Controls whether the tree ID is shown in completions."
         }
       }
     },
@@ -66,13 +71,6 @@
       }
     ],
     "menus": {
-      "view/title": [
-        {
-          "command": "forester.new",
-          "when": "view == workbench.explorer.fileView",
-          "group": "navigation"
-        }
-      ],
       "explorer/context": [
         {
           "command": "forester.new",

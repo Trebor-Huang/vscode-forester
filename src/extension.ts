@@ -44,18 +44,20 @@ function update() {
 
 async function suggest(range: vscode.Range) {
   var results : vscode.CompletionItem[] = [];
-  for (const [id, val] of Object.entries(await cachedQuery)) {
-    let { title, taxon } = val;
-    title ??= "Untitled";
+  const config = vscode.workspace.getConfiguration('forester');
+  const showID = config.get('completion.showID') ?? false;
+  for (const [id, { title, taxon }] of Object.entries(await cachedQuery)) {
     let item = new vscode.CompletionItem(
-      { label: title , description: taxon ?? "" },
+      { label: title === null ? `[${id}]` :
+          showID ? `[${id}] ${title}` : title ,
+        description: taxon ?? "" },
       vscode.CompletionItemKind.Value
     );
     item.range = range;
     item.insertText = id;
-    item.filterText = `${id} ${title} ${taxon ?? ""}`;
+    item.filterText = `${id} ${title ?? ""} ${taxon ?? ""}`;
     item.detail = `${taxon ?? "Tree"} [${id}]`;
-    item.documentation = title;
+    item.documentation = title ?? undefined;
     results.push(item);
   }
   return results;
