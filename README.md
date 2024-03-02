@@ -17,6 +17,8 @@ Some basic VSCode support for [Forester](https://www.jonmsterling.com/jms-005P.x
   - [ ] Escapes are not quite right yet, though I'm not sure forester is doing it right either
   - [X] ~~Embedded formula highlight~~ (pretending it's plain forester syntax is good enough)
 - [ ] Convenience features
+  - [ ] Hover/Inlay hint of link titles
+  - [ ] Rename links upon tree renaming
   - [ ] Advanced language features (this is not doable without a forester LSP)
   - [ ] Formula preview (hard without forester LSP, since macros are evaluated by forester)
   - [ ] Shift-click to jump to file (how do we locate anything? we need more stuff for `forester query`)
