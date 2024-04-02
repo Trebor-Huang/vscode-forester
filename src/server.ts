@@ -83,12 +83,12 @@ export async function command(root: vscode.Uri, command: string[]) {
   // Get some configurations
   const config = vscode.workspace.getConfiguration('forester');
   const path : string = config.get('path') ?? "forester";
-  const dirs : string[] = config.get('directories') ?? ['trees'];
+  const configfile : string | undefined = config.get('config');
 
   try {
     let { stdout, stderr } = await execFile(
       path,
-      [...command, ...dirs],
+      configfile ? [...command, configfile] : command,
       {
         cwd: root.fsPath,
         windowsHide: true

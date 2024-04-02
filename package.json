@@ -27,15 +27,10 @@
     "configuration": {
       "title": "Forester",
       "properties": {
-        "forester.directories": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "trees"
-          ],
-          "description": "Specifies the directories for forester to scan for trees. This should usually be edited per workspace, instead of globally."
+        "forester.config": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Specifies the forester config file (defaults to `forest.toml`). This should usually be edited per workspace, instead of globally."
         },
         "forester.path": {
           "type": "string",

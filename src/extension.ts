@@ -179,8 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
           "--dest", folder.fsPath,
           "--prefix", prefix,
           ...(template ? [`--template=${template}`] : []),
-          ...(random ? ["--random"] : []),
-          "--dirs"  // Follows the directories in the settings
+          ...(random ? ["--random"] : [])
         ]))?.trim();
         if (result) {
           await vscode.window.showTextDocument(

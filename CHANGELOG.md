@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.4
+
+- Update to [new forester command syntax](https://todo.sr.ht/~jonsterling/forester/44#event-339153).
+
 ## 0.0.3
 
 - Improves performance in large forests (#5), experimental.
