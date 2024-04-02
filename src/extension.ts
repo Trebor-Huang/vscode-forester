@@ -162,14 +162,20 @@ export function activate(context: vscode.ExtensionContext) {
         .filter(([n, f]) => f === vscode.FileType.File && n.endsWith(".tree"))
         .map(([n, f]) => n.slice(0, -5));
         var template: string | undefined = undefined;
+        templates.push("(No template)");
         if (templates) {
           template = await vscode.window.showQuickPick(
             templates,
             {
               canPickMany: false,
-              placeHolder: "Press Escape to use empty template"
+              placeHolder: "Choose a template"
             }
           );
+        }
+        if (template === undefined) {
+          return;
+        } else if (template === "(No template)") {
+          template = undefined;
         }
 
         const random : boolean = vscode.workspace
