@@ -13,17 +13,19 @@ export interface QueryResult {
   metas: Map<string, string>
 }
 
+// TODO remove duplicate code
 export async function query(root: vscode.Uri, token: vscode.CancellationToken)
   : Promise<{[key: string]: QueryResult}> {
   // Get some configurations
   const config = vscode.workspace.getConfiguration('forester');
   const path : string = config.get('path') ?? "forester";
-  const dirs : string[] = config.get('directories') ?? ['trees'];
+  const configfile : string | undefined = config.get('config');
 
   // Spawn process
   let forester = child_process.spawn(
     path,
-    ["query", "all", ...dirs],
+    ["query", "all",
+      ...(configfile ? [configfile] : [])],
     {
       cwd: root.fsPath,
       detached: false,
@@ -84,6 +86,8 @@ export async function command(root: vscode.Uri, command: string[]) {
   const config = vscode.workspace.getConfiguration('forester');
   const path : string = config.get('path') ?? "forester";
   const configfile : string | undefined = config.get('config');
+
+  console.log(command);
 
   try {
     let { stdout, stderr } = await execFile(
