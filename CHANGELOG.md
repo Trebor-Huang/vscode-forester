@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.5
+
+- Added [new forester xml syntax](https://www.jonmsterling.com/jms-00RM.xml). Old syntax highlight is still supported.
+
 ## 0.0.4
 
 - Update to [new forester command syntax](https://todo.sr.ht/~jonsterling/forester/44#event-339153).

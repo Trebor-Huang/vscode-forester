@@ -108,10 +108,21 @@
       }
     },
     "command": {
-      "match": "\\\\[A-Za-z][0-9A-Za-z\\-/#]*",
-      "captures": {
-        "0": { "name": "constant.language.forester" }
-      }
+      "patterns": [
+        {
+          "match": "\\\\[A-Za-z][0-9A-Za-z\\-/#]*",
+          "captures": {
+            "0": { "name": "constant.language.forester" }
+          }
+        },
+        {
+          "match": "\\\\<([A-Za-z][0-9A-Za-z\\-/#:]*)>",
+          "captures": {
+            "0": { "name": "constant.language.forester" },
+            "1": { "name": "support.variable.xmlns.forester" }
+          }
+        }
+      ]
     },
     "comment": {
       "begin": "%",
