@@ -34,8 +34,9 @@ You need forester installed, see [here](https://www.jonmsterling.com/jms-005P.xm
 ## Extension Settings
 
 - Use `forester.path` to configure the path to forester. It needs to include the name of the executable too.
-- Use `forester.directories` to specify a list of folders to look for trees. This should usually be edited per workspace, instead of globally.
-- Use `forester.completion.showID` to toggle whether the tree ID is shown in completions. It is recommended to use smaller fonts when switching on this feature. There are also plugins to create keybindings for setting toggles. VSCode also has a lot of useful settings in the `editor.suggest` section worth looking at in conjunction.
+- Use `forester.config` to specify the forester config file. This should usually be edited per workspace, instead of globally.
+  - In the toml file, add a line `prefixes = ["prfx", ...]` to specify the prefixes to pick from. This is used when creating new trees.
+- Use `forester.completion.showID` to toggle whether the tree ID is shown in completions. It is recommended to use smaller fonts when switching on this feature. There are also plugins to create keybindings for setting toggles, in case you need to switch it on and off quickly. VSCode also has a lot of useful settings in the `editor.suggest` section worth looking at in conjunction.
 - Use `forester.create.random` to control whether the tree ID is generated randomly or sequentially.
 
 ## Known Issues

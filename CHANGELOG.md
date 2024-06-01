@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.6
+
+- Stop using `query prefix`.
+
 ## 0.0.5
 
 - Added [new forester xml syntax](https://www.jonmsterling.com/jms-00RM.xml). Old syntax highlight is still supported.
