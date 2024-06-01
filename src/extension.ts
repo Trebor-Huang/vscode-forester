@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
+import {load} from 'js-toml';
 import * as util from 'util';
 import * as server from './server';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 // TODO there must be a better system
 // Maybe an event pool instead of a promise
@@ -131,9 +134,19 @@ export function activate(context: vscode.ExtensionContext) {
           return;
         }
         let root = getRoot();
+        // Get prefixes from configuration
+        const config = vscode.workspace.getConfiguration('forester');
+        let configfile : string | undefined = config.get('config');
+        if (! configfile) {
+          configfile = "forest.toml";
+        }
+        const toml = await readFile(join(root.fsPath, configfile), {
+          encoding: 'utf-8'
+        });
+        let obj : {forest ?: {prefixes ?: string[]}} = load(toml);
+        let prefixes: string[] | undefined = obj?.forest?.prefixes;
         // Ask about prefix and template in a quick pick
         // https://code.visualstudio.com/api/references/vscode-api#window.showQuickPick
-        let prefixes = (await server.command(root, ["query", "prefix"]))?.trim().split('\n') ?? [];
         var prefix: string | undefined = undefined;
         // allow the option to just use a new prefix
         if (prefixes) {
@@ -148,7 +161,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (prefix === undefined) {
           prefix = await vscode.window.showInputBox(
             {
-              placeHolder: "Enter a prefix"
+              placeHolder: "Enter a prefix or Escape to cancel"
             }
           );
         }
