@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-- Support the upcoming LSP functionalities
+- Support forester 5.0, and the upcoming LSP functionalities.
 
 ## 0.0.6
 

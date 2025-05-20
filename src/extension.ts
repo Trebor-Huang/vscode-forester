@@ -15,7 +15,7 @@ import { join } from 'path';
 
 // TODO there must be a better system
 // Maybe an event pool instead of a promise
-var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
+var cachedQuery : Promise<server.NewQuery>;
 var cancel : vscode.CancellationTokenSource | undefined;
 var dirty = true;
 var client : LanguageClient;
@@ -44,9 +44,9 @@ function update() {
   dirty = false;
   cachedQuery = Promise.race([
     util.promisify((callback : (...args: any) => void) => {
-      // If cancelled, return {} immediately
+      // If cancelled, return [] immediately
       cancel?.token.onCancellationRequested((e) => {
-        callback(undefined, {});
+        callback(undefined, []);
       });
     })(),
     // The token is also used to cancel the stuff inside
@@ -58,7 +58,8 @@ async function suggest(range: vscode.Range) {
   var results : vscode.CompletionItem[] = [];
   const config = vscode.workspace.getConfiguration('forester');
   const showID = config.get('completion.showID') ?? false;
-  for (const [id, { title, taxon }] of Object.entries(await cachedQuery)) {
+  for (const entry of (await cachedQuery)) {
+    let {uri: id, title, taxon} = entry;
     let item = new vscode.CompletionItem(
       { label: title === null ? `[${id}]` :
           showID ? `[${id}] ${title}` : title ,
