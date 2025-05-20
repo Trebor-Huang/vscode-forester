@@ -1,4 +1,12 @@
 import * as vscode from 'vscode';
+import {
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+  Executable,
+  TransportKind
+} from 'vscode-languageclient/node';
+
 import {load} from 'js-toml';
 import * as util from 'util';
 import * as server from './server';
@@ -10,6 +18,7 @@ import { join } from 'path';
 var cachedQuery : Promise<{[id: string]: server.QueryResult}>;
 var cancel : vscode.CancellationTokenSource | undefined;
 var dirty = true;
+var client : LanguageClient;
 
 function getRoot() {
   if (vscode.workspace.workspaceFolders?.length) {
@@ -67,56 +76,89 @@ async function suggest(range: vscode.Range) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  const watcher = vscode.workspace.createFileSystemWatcher('**/*.tree');
-  watcher.onDidCreate(() => { dirty = true; });
-  watcher.onDidChange(() => { dirty = true; });
-  watcher.onDidDelete(() => { dirty = true; });
-  update();
+  if (vscode.workspace.getConfiguration('forester').get("useLSP")) {
+
+    let e : Executable = {
+      command: "/Users/trebor/.opam/default/bin/forester",
+      transport: TransportKind.stdio,
+      args: ["lsp"],
+    };
+
+    let serverOptions: ServerOptions = {
+      run: e, debug: e
+    };
+    let clientOptions: LanguageClientOptions = {
+      documentSelector: [{ scheme: "file", language: "forester" }],
+      synchronize: {
+        fileEvents: vscode.workspace.createFileSystemWatcher("**/.tree"),
+      },
+    };
+
+    client = new LanguageClient(
+      'foresterLanguageClient',
+      'Forester Language Client',
+      serverOptions,
+      clientOptions
+    );
+
+    client.start();
+
+  } else {
+    // We will complete ourselves
+
+    const watcher = vscode.workspace.createFileSystemWatcher('**/*.tree');
+    watcher.onDidCreate(() => { dirty = true; });
+    watcher.onDidChange(() => { dirty = true; });
+    watcher.onDidDelete(() => { dirty = true; });
+    update();
+
+    context.subscriptions.push(watcher,
+      vscode.languages.registerCompletionItemProvider(
+        { scheme: 'file', language: 'forester' },
+        {
+          async provideCompletionItems(doc, pos, tok, _) {
+            // see if we should complete
+            // \transclude{, \import{, \export{, \ref, [link](, [[link
+            // There are three matching groups for the replacing content
+            const tagPattern =
+              /(?:\\transclude{|\\import{|\\export{|\\ref{)([^}]*)$|\[[^\[]*\]\(([^\)]*)$|\[\[([^\]]*)$/d;
+            const text = doc.getText(
+              new vscode.Range(new vscode.Position(pos.line, 0), pos)
+            );
+            let match = tagPattern.exec(text);
+            if (match === null || match.indices === undefined) {
+              return [];
+            }
+  
+            // Get the needed range
+            let ix =
+              match.indices[1]?.[0] ??
+              match.indices[2]?.[0] ??
+              match.indices[3]?.[0] ??
+              pos.character;
+            let range = new vscode.Range(
+              new vscode.Position(pos.line, ix),
+              pos
+            );
+  
+            // If we cancel, we kill the process
+            update();
+            let killswitch = tok.onCancellationRequested(() => {
+              dirty = true;
+              cancel?.cancel();
+            });
+            let result = await suggest(range);
+            killswitch.dispose();
+            return result;
+          },
+          // resolveCompletionItem, we can extend the CompletionItem class to inject more information
+        },
+        '{', '(', '['
+      )
+    );
+  }
 
   context.subscriptions.push(
-    watcher,
-    vscode.languages.registerCompletionItemProvider(
-      { scheme: 'file', language: 'forester' },
-      {
-        async provideCompletionItems(doc, pos, tok, _) {
-          // see if we should complete
-          // \transclude{, \import{, \export{, \ref, [link](, [[link
-          // There are three matching groups for the replacing content
-          const tagPattern =
-            /(?:\\transclude{|\\import{|\\export{|\\ref{)([^}]*)$|\[[^\[]*\]\(([^\)]*)$|\[\[([^\]]*)$/d;
-          const text = doc.getText(
-            new vscode.Range(new vscode.Position(pos.line, 0), pos)
-          );
-          let match = tagPattern.exec(text);
-          if (match === null || match.indices === undefined) {
-            return [];
-          }
-
-          // Get the needed range
-          let ix =
-            match.indices[1]?.[0] ??
-            match.indices[2]?.[0] ??
-            match.indices[3]?.[0] ??
-            pos.character;
-          let range = new vscode.Range(
-            new vscode.Position(pos.line, ix),
-            pos
-          );
-
-          // If we cancel, we kill the process
-          update();
-          let killswitch = tok.onCancellationRequested(() => {
-            dirty = true;
-            cancel?.cancel();
-          });
-          let result = await suggest(range);
-          killswitch.dispose();
-          return result;
-        },
-        // resolveCompletionItem, we can extend the CompletionItem class to inject more information
-      },
-      '{', '(', '['
-    ),
     vscode.commands.registerCommand(
       "forester.new",
       async function (folder ?: vscode.Uri) {
@@ -211,4 +253,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+  if (client) {
+    return client.stop();
+  }
+}
